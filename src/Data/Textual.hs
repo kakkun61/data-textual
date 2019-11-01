@@ -61,7 +61,7 @@ module Data.Textual
   , fromLazyUtf8As
   ) where
 
-import Prelude hiding (fail, print)
+import Prelude hiding (print)
 import Data.Typeable (Typeable)
 #if !MIN_VERSION_base(4, 13, 0)
 import Data.Foldable (Foldable)
@@ -83,7 +83,10 @@ import Data.Text.Lazy.Encoding (decodeUtf8)
 import Data.Textual.Integral
 import Data.Textual.Fractional
 import Control.Applicative
-import Control.Monad.Fail (MonadFail (fail))
+#if !MIN_VERSION_base(4, 13, 0)
+import Control.Monad.Fail (MonadFail)
+import qualified Control.Monad.Fail as MF
+#endif
 import qualified Text.Printer as TP
 import qualified Text.Printer.Integral as TP
 import qualified Text.Printer.Fractional as TP
@@ -399,6 +402,10 @@ instance Monad Parser where
   {-# INLINE (>>=) #-}
   (>>) = (*>)
   {-# INLINE (>>) #-}
+#if !MIN_VERSION_base(4, 13, 0)
+  fail = MF.fail
+  {-# INLINE fail #-}
+#endif
 
 instance MonadFail Parser where
   fail = PC.unexpected
